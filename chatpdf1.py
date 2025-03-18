@@ -22,16 +22,23 @@ def get_pdf_text(pdf_docs):
             text += page.extract_text()
     return text
 
+
+# Function to split extracted text into manageable chunks
 def get_text_chunks(text):
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=10000, chunk_overlap=1000)
     chunks = text_splitter.split_text(text)
     return chunks
 
+
+# Function to create and store vector embeddings
+def get_vector_store(text_chunks):
 def get_vector_store(text_chunks):
     embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
     vector_store = FAISS.from_texts(text_chunks, embedding=embeddings)
     vector_store.save_local("faiss_index")
 
+
+# Function to create a conversational chain for question-answering
 def get_conversational_chain():
     prompt_template = """
     Answer the question as detailed as possible from the provided context, make sure to provide all the details, if the answer is not in
@@ -55,6 +62,8 @@ def user_input(user_question):
     print(response)
     st.write("Reply: ", response["output_text"])
 
+
+# Streamlit UI
 def main():
     st.set_page_config(page_title="Chat PDF")
     st.header("Interactive RAG-based LLM for Multi-PDF Document Analysis", divider='rainbow')
